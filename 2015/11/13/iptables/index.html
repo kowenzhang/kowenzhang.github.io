@@ -1,0 +1,551 @@
+
+ <!DOCTYPE HTML>
+<html lang="auto_detect">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>iptables | Do cool things for fun</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="kowen">
+    
+
+    <meta name="keywords" content="iptables,nat,firewall,debian">
+    <meta name="description" content="最近捣鼓ipsec vpn，需要用到iptables相关知识，搜到了debian网站上的这篇文章，顺手翻译一下，以备查阅 文章来源 www.kowen.cn 原文连接(English)">
+<meta name="keywords" content="iptables,nat,firewall,debian">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iptables">
+<meta property="og:url" content="www.kowen.cn/2015/11/13/iptables/index.html">
+<meta property="og:site_name" content="Do cool things for fun">
+<meta property="og:description" content="最近捣鼓ipsec vpn，需要用到iptables相关知识，搜到了debian网站上的这篇文章，顺手翻译一下，以备查阅 文章来源 www.kowen.cn 原文连接(English)">
+<meta property="og:locale" content="auto_detect">
+<meta property="og:updated_time" content="2019-04-08T09:06:12.048Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iptables">
+<meta name="twitter:description" content="最近捣鼓ipsec vpn，需要用到iptables相关知识，搜到了debian网站上的这篇文章，顺手翻译一下，以备查阅 文章来源 www.kowen.cn 原文连接(English)">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Do cool things for fun" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/funcool_logo_32X32.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/funcool_logo_114X114.png">
+    <link rel="apple-touch-icon-precomposed" href="/img/funcool_logo_114X114.png">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/funcool_logo.svg" alt="Do cool things for fun" title="Do cool things for fun"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Do cool things for fun">Do cool things for fun</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">归档</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+						<form class="search" action="http://search.kowen.cn/cse/search" target="_blank">
+							<label>Search</label>
+						<input name="s" type="hidden" value= 12712694625790015895 ><input type="text" name="q" size="30" placeholder="Search"><br>
+						</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2015/11/13/iptables/" title="iptables" itemprop="url">iptables</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="kowen" target="_blank" itemprop="author">kowen</a>
+		
+  <p class="article-time">
+    <time datetime="2015-11-13T07:35:12.000Z" itemprop="datePublished"> Published 2015-11-13</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#查看当前配置"><span class="toc-number">1.</span> <span class="toc-text">查看当前配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#在文件中存储iptables"><span class="toc-number">2.</span> <span class="toc-text">在文件中存储iptables</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#参考"><span class="toc-number">3.</span> <span class="toc-text">参考</span></a></li></ol>
+		
+		</div>
+		
+		<p><em>最近捣鼓ipsec vpn，需要用到iptables相关知识，搜到了debian网站上的这篇文章，顺手翻译一下，以备查阅</em></p>
+<p><strong>文章来源 <a href="http://www.kowen.cn/2015/11/13/iptables/">www.kowen.cn</a></strong></p>
+<p><a href="https://wiki.debian.org/iptables" target="_blank" rel="noopener">原文连接(English)</a><br><a id="more"></a><br>Iptables 提供包过滤，网络地址转换（NAT）等包处理功能。</p>
+<p><strong>防火墙</strong> 和<strong>NAT</strong>是iptables提供的普通功能中最重要的两个。</p>
+<p>手动配置iptables对新手来说是个不小的挑战。幸运的是，有很多可用的辅助配置工具：比如<a href="https://packages.debian.org/fwbuilder" target="_blank" rel="noopener">fwbuilder</a>，<a href="https://packages.debian.org/bastille" target="_blank" rel="noopener">bastille</a>，<a href="https://packages.debian.org/ferm" target="_blank" rel="noopener">ferm</a>(<a href="https://wiki.debian.org/ferm" target="_blank" rel="noopener">wiki</a>),<a href="https://packages.debian.org/ufw" target="_blank" rel="noopener">ufw</a>(来自Ubuntu的简单防火墙)</p>
+<h3 id="查看当前配置"><a href="#查看当前配置" class="headerlink" title="查看当前配置"></a>查看当前配置</h3><p>查看当前配置，输入以下命令：<br><figure class="highlight ebnf"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="attribute">iptables -L</span></div></pre></td></tr></table></figure></p>
+<p>可以得到类似下面的输出结果：<br><figure class="highlight lisp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">Chain INPUT (<span class="name">policy</span> ACCEPT)</div><div class="line">target     prot opt source               destination</div><div class="line"></div><div class="line">Chain FORWARD (<span class="name">policy</span> ACCEPT)</div><div class="line">target     prot opt source               destination</div><div class="line"></div><div class="line">Chain OUTPUT (<span class="name">policy</span> ACCEPT)</div><div class="line">target     prot opt source               destination</div></pre></td></tr></table></figure></p>
+<p>以上规则允许所有访问。</p>
+<h3 id="在文件中存储iptables"><a href="#在文件中存储iptables" class="headerlink" title="在文件中存储iptables"></a>在文件中存储iptables</h3><p>Note:<em>包 <a href="https://packages.debian.org/iptables-persistent" target="_blank" rel="noopener">iptables-persistent</a>包可以帮助你来完成。</em></p>
+<p>我们来创建一个测试iptables文件来加深记忆：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">editor /etc/iptables<span class="selector-class">.test</span><span class="selector-class">.rules</span></div></pre></td></tr></table></figure>
+<p>在文件中输入一些基本的规则：<br><figure class="highlight pf"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line">*filter</div><div class="line"></div><div class="line"><span class="comment"># Allows all loopback (lo0) traffic and drop all traffic to 127/8 that doesn't use lo0</span></div><div class="line">-A INPUT -i lo -j ACCEPT</div><div class="line">-A INPUT ! -i lo -d <span class="number">127.0</span>.<span class="number">0.0</span>/<span class="number">8</span> -j REJECT</div><div class="line"></div><div class="line"><span class="comment"># Accepts all established inbound connections</span></div><div class="line">-A INPUT -m <span class="keyword">state</span> --state ESTABLISHED,RELATED -j ACCEPT</div><div class="line"></div><div class="line"><span class="comment"># Allows all outbound traffic</span></div><div class="line"><span class="comment"># You could modify this to only allow certain traffic</span></div><div class="line">-A OUTPUT -j ACCEPT</div><div class="line"></div><div class="line"><span class="comment"># Allows HTTP and HTTPS connections from anywhere (the normal ports for websites)</span></div><div class="line">-A INPUT -p tcp --dport <span class="number">80</span> -j ACCEPT</div><div class="line">-A INPUT -p tcp --dport <span class="number">443</span> -j ACCEPT</div><div class="line"></div><div class="line"><span class="comment"># Allows SSH connections</span></div><div class="line"><span class="comment"># The --dport number is the same as in /etc/ssh/sshd_config</span></div><div class="line">-A INPUT -p tcp -m <span class="keyword">state</span> --state NEW --dport <span class="number">22</span> -j ACCEPT</div><div class="line"></div><div class="line"><span class="comment"># Now you should read up on iptables rules and consider whether ssh access</span></div><div class="line"><span class="comment"># for everyone is really desired. Most likely you will only allow access from certain IPs.</span></div><div class="line"></div><div class="line"><span class="comment"># Allow ping</span></div><div class="line"><span class="comment">#  note that blocking other types of icmp packets is considered a bad idea by some</span></div><div class="line"><span class="comment">#  remove -m icmp --icmp-type 8 from this line to allow all kinds of icmp:</span></div><div class="line"><span class="comment">#  https://security.stackexchange.com/questions/22711</span></div><div class="line">-A INPUT -p icmp -m icmp --icmp-type <span class="number">8</span> -j ACCEPT</div><div class="line"></div><div class="line"><span class="comment"># log iptables denied calls (access via 'dmesg' command)</span></div><div class="line">-A INPUT -m <span class="keyword">limit</span> --limit <span class="number">5</span>/<span class="keyword">min</span> -j LOG --log-prefix <span class="string">"iptables denied: "</span> --log-level <span class="number">7</span></div><div class="line"></div><div class="line"><span class="comment"># Reject all other inbound - default deny unless explicitly allowed policy:</span></div><div class="line">-A INPUT -j REJECT</div><div class="line">-A FORWARD -j REJECT</div><div class="line"></div><div class="line">COMMIT</div></pre></td></tr></table></figure></p>
+<p>看起来很复杂，其实一条一条的看，你会发现我们只留下了80、443和ssh端口允许访问，其他的全都关闭了，其中80和443是浏览器用到的端口。</p>
+<p>启用测试规则：<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">iptables -restore &lt; /etc/iptables<span class="selector-class">.test</span><span class="selector-class">.rules</span></div></pre></td></tr></table></figure></p>
+<p>查看变化<br><figure class="highlight ebnf"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="attribute">iptables -L</span></div></pre></td></tr></table></figure></p>
+<p>结果会提示我们只开启了被允许的端口，其余的都关闭了。</p>
+<p>如果你愿意的话， 可以把新规则添加到主iptables文件中。<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">iptables -save &gt; /etc/iptables<span class="selector-class">.up</span><span class="selector-class">.rules</span></div></pre></td></tr></table></figure></p>
+<p>为了确保iptables在重启后被启用，我们需要新建一个文件：<br><figure class="highlight vim"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">editor /etc/network/<span class="keyword">if</span>-<span class="keyword">pre</span>-<span class="keyword">up</span>.d/iptables</div></pre></td></tr></table></figure></p>
+<p>再在文件中添加几行：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#!/bin/sh</span></div><div class="line">/sbin/iptables-restore &lt; /etc/iptables.up.rules</div></pre></td></tr></table></figure></p>
+<p>然后给文件添加执行权限：<br><figure class="highlight vim"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">chmod +<span class="keyword">x</span> /etc/network/<span class="keyword">if</span>-<span class="keyword">pre</span>-<span class="keyword">up</span>.d/iptables</div></pre></td></tr></table></figure></p>
+<p>Note:<em>这篇指引是由Geejay贡献给wiki.openvz.org 作为容器安装指引的一部分</em></p>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><ul>
+<li>netfilter/iptables的相关文档<br><a href="http://www.netfilter.org/documentation/" target="_blank" rel="noopener">http://www.netfilter.org/documentation/</a></li>
+<li>简单介绍<ul>
+<li>Linux 防火墙和高级路由<br><a href="http://ornellas.apanela.com/dokuwiki/pub:firewall_and_adv_routing" target="_blank" rel="noopener">http://ornellas.apanela.com/dokuwiki/pub:firewall_and_adv_routing</a><br>-Iptables基础<br><a href="http://www.justlinux.com/nhf/Security/IPtables_Basics.html" target="_blank" rel="noopener">http://www.justlinux.com/nhf/Security/IPtables_Basics.html</a></li>
+</ul>
+</li>
+<li><a href="https://wiki.debian.org/Firewalls" target="_blank" rel="noopener">Firewalls</a></li>
+<li>保护Debian: 添加防火墙功能：<br><a href="http://www.debian.org/doc/manuals/securing-debian-howto/ch-sec-services.en.html#s-firewall-setup" target="_blank" rel="noopener">http://www.debian.org/doc/manuals/securing-debian-howto/ch-sec-services.en.html#s-firewall-setup</a></li>
+</ul>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/linux/">linux</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/iptables/">iptables</a><a href="/tags/nat/">nat</a><a href="/tags/firewall/">firewall</a><a href="/tags/linux/">linux</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="www.kowen.cn/2015/11/13/iptables/" data-title="iptables | Do cool things for fun" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2015/12/17/解决本地amend后，远程服务器拒绝push请求的问题/" title="解决本地amend后，远程服务器拒绝push请求的问题">
+  <strong>上一篇：</strong><br/>
+  <span>
+  解决本地amend后，远程服务器拒绝push请求的问题</span>
+</a>
+</div>
+
+
+</nav>
+
+	
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#查看当前配置"><span class="toc-number">1.</span> <span class="toc-text">查看当前配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#在文件中存储iptables"><span class="toc-number">2.</span> <span class="toc-text">在文件中存储iptables</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#参考"><span class="toc-number">3.</span> <span class="toc-text">参考</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/git/" title="git">git<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/java/" title="java">java<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/linux/" title="linux">linux<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/python/" title="python">python<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/web前端/" title="web前端">web前端<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/干货/" title="干货">干货<sup>10</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/数据库/" title="数据库">数据库<sup>1</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/PyQt5/" title="PyQt5">PyQt5<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/python/" title="python">python<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/git/" title="git">git<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/lighttpd/" title="lighttpd">lighttpd<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ubuntu/" title="ubuntu">ubuntu<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/网盘/" title="网盘">网盘<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/iptables/" title="iptables">iptables<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/nat/" title="nat">nat<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/firewall/" title="firewall">firewall<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/linux/" title="linux">linux<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/struts2/" title="struts2">struts2<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/主机头/" title="主机头">主机头<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/godaddy/" title="godaddy">godaddy<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/dnspod/" title="dnspod">dnspod<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/域名/" title="域名">域名<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/dwz/" title="dwz">dwz<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/上传/" title="上传">上传<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mysql/" title="mysql">mysql<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/字符集/" title="字符集">字符集<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/编码/" title="编码">编码<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+  
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Enjoy life! <br/>
+			Welcome to www.kowen.cn</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/1748948232" target="_blank" class="icon-weibo" title="微博"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:guangwen@outlook.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="kowen">kowen</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#nothing"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Ff461cd29606b66590e7cad3a4905fb4c' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

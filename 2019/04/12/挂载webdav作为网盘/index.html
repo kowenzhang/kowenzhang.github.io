@@ -1,0 +1,563 @@
+
+ <!DOCTYPE HTML>
+<html lang="auto_detect">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>挂载webdav作为网盘 | Do cool things for fun</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="kowen">
+    
+
+    
+    <meta name="description" content="by kowento 简书    webdav可以使用浏览器通过http访问,但很多情况下作为网盘访问更加方便,这里主要介绍一下windows和linux如何连接webdav作为网盘.">
+<meta name="keywords" content="网盘,webdav">
+<meta property="og:type" content="article">
+<meta property="og:title" content="挂载webdav作为网盘">
+<meta property="og:url" content="www.kowen.cn/2019/04/12/挂载webdav作为网盘/index.html">
+<meta property="og:site_name" content="Do cool things for fun">
+<meta property="og:description" content="by kowento 简书    webdav可以使用浏览器通过http访问,但很多情况下作为网盘访问更加方便,这里主要介绍一下windows和linux如何连接webdav作为网盘.">
+<meta property="og:locale" content="auto_detect">
+<meta property="og:updated_time" content="2019-04-18T06:52:39.968Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="挂载webdav作为网盘">
+<meta name="twitter:description" content="by kowento 简书    webdav可以使用浏览器通过http访问,但很多情况下作为网盘访问更加方便,这里主要介绍一下windows和linux如何连接webdav作为网盘.">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Do cool things for fun" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/funcool_logo_32X32.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/funcool_logo_114X114.png">
+    <link rel="apple-touch-icon-precomposed" href="/img/funcool_logo_114X114.png">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/funcool_logo.svg" alt="Do cool things for fun" title="Do cool things for fun"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Do cool things for fun">Do cool things for fun</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">归档</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+						<form class="search" action="http://search.kowen.cn/cse/search" target="_blank">
+							<label>Search</label>
+						<input name="s" type="hidden" value= 12712694625790015895 ><input type="text" name="q" size="30" placeholder="Search"><br>
+						</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2019/04/12/挂载webdav作为网盘/" title="挂载webdav作为网盘" itemprop="url">挂载webdav作为网盘</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="kowen" target="_blank" itemprop="author">kowen</a>
+		
+  <p class="article-time">
+    <time datetime="2019-04-12T03:33:00.000Z" itemprop="datePublished"> Published 2019-04-12</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一-windows挂载webdav网盘"><span class="toc-number">1.</span> <span class="toc-text">一. windows挂载webdav网盘</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-修改注册表支持http访问webdav"><span class="toc-number">1.1.</span> <span class="toc-text">1.1 修改注册表支持http访问webdav</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-重启服务"><span class="toc-number">1.2.</span> <span class="toc-text">1.2 重启服务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-映射网络驱动器"><span class="toc-number">1.3.</span> <span class="toc-text">1.3 映射网络驱动器</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二-linux挂载webdav网盘"><span class="toc-number">2.</span> <span class="toc-text">二. linux挂载webdav网盘</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-安装必要组件"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 安装必要组件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-查看当前用户的ID"><span class="toc-number">2.2.</span> <span class="toc-text">2.2 查看当前用户的ID</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-手动挂载"><span class="toc-number">2.3.</span> <span class="toc-text">2.3 手动挂载</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-卸载"><span class="toc-number">2.4.</span> <span class="toc-text">2.4 卸载</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-5-记住用户名密码"><span class="toc-number">2.5.</span> <span class="toc-text">2.5 记住用户名密码</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-5-1-编辑davfs2-conf"><span class="toc-number">2.5.1.</span> <span class="toc-text">2.5.1 编辑davfs2.conf</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-5-2-编辑secrets文件"><span class="toc-number">2.5.2.</span> <span class="toc-text">2.5.2 编辑secrets文件</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-6-开机自动挂载"><span class="toc-number">2.6.</span> <span class="toc-text">2.6. 开机自动挂载</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-6-1-首先完成上面5的步骤记住用户名和密码"><span class="toc-number">2.6.1.</span> <span class="toc-text">2.6.1 首先完成上面5的步骤记住用户名和密码</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-6-2-创建文件mnt-webdav-mount"><span class="toc-number">2.6.2.</span> <span class="toc-text">2.6.2 创建文件mnt-webdav.mount</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-6-3-创建文件mnt-webdav-automount"><span class="toc-number">2.6.3.</span> <span class="toc-text">2.6.3 创建文件mnt-webdav.automount</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-6-4-刷新服务并连接"><span class="toc-number">2.6.4.</span> <span class="toc-text">2.6.4 刷新服务并连接</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-6-5-实现开始启动"><span class="toc-number">2.6.5.</span> <span class="toc-text">2.6.5 实现开始启动</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三-参考资料"><span class="toc-number">3.</span> <span class="toc-text">三.参考资料</span></a></li></ol>
+		
+		</div>
+		
+		<p>by <a href="https://www.kowen.cn">kowen</a><br>to <a href="https://www.jianshu.com/u/e938fd073edf" target="_blank" rel="noopener">简书</a>  </p>
+<blockquote>
+<p>webdav可以使用浏览器通过http访问,但很多情况下作为网盘访问更加方便,这里主要介绍一下windows和linux如何连接webdav作为网盘.</p>
+</blockquote>
+<a id="more"></a>
+<h2 id="一-windows挂载webdav网盘"><a href="#一-windows挂载webdav网盘" class="headerlink" title="一. windows挂载webdav网盘"></a>一. windows挂载webdav网盘</h2><h3 id="1-1-修改注册表支持http访问webdav"><a href="#1-1-修改注册表支持http访问webdav" class="headerlink" title="1.1 修改注册表支持http访问webdav"></a>1.1 修改注册表支持http访问webdav</h3><p>如果WebDAV不是https的，win7、WIN10默认是添加不上的，需要修改注册表<br><code>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\WebClient\Parameters</code><br>把BasicAuthLevel 值改成2，即同时支持http和https，默认只支持https.</p>
+<h3 id="1-2-重启服务"><a href="#1-2-重启服务" class="headerlink" title="1.2 重启服务"></a>1.2 重启服务</h3><figure class="highlight dos"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">net</span> stop webclient </div><div class="line"><span class="built_in">net</span> <span class="built_in">start</span> webclient</div></pre></td></tr></table></figure>
+<h3 id="1-3-映射网络驱动器"><a href="#1-3-映射网络驱动器" class="headerlink" title="1.3 映射网络驱动器"></a>1.3 映射网络驱动器</h3><p>打开’计算机’,点击’映射网络驱动器’,文件夹中输入’<a href="http://webdav_URL" target="_blank" rel="noopener">http://webdav_URL</a>‘ 即可,然后输入用户名密码.</p>
+<h2 id="二-linux挂载webdav网盘"><a href="#二-linux挂载webdav网盘" class="headerlink" title="二. linux挂载webdav网盘"></a>二. linux挂载webdav网盘</h2><h3 id="2-1-安装必要组件"><a href="#2-1-安装必要组件" class="headerlink" title="2.1 安装必要组件"></a>2.1 安装必要组件</h3><figure class="highlight 1c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo apt install davfs2 <span class="comment">//ubuntu</span></div><div class="line">sudo pacman -S davfs2 <span class="comment">//arch, manjaro</span></div></pre></td></tr></table></figure>
+<p>查看是否安装正确<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mount<span class="selector-class">.davfs</span> -h</div></pre></td></tr></table></figure></p>
+<h3 id="2-2-查看当前用户的ID"><a href="#2-2-查看当前用户的ID" class="headerlink" title="2.2 查看当前用户的ID"></a>2.2 查看当前用户的ID</h3><figure class="highlight applescript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">id</span> 用户名</div></pre></td></tr></table></figure>
+<p><em>一般为1000</em></p>
+<h3 id="2-3-手动挂载"><a href="#2-3-手动挂载" class="headerlink" title="2.3 手动挂载"></a>2.3 手动挂载</h3><figure class="highlight awk"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo mkdir <span class="regexp">/mnt/</span>webdav</div><div class="line">sudo mount -o gid=<span class="number">1000</span>,uid=上一步查到的用户ID -t davfs http:<span class="regexp">//</span>webdav_url <span class="regexp">/mnt/</span>webdav</div></pre></td></tr></table></figure>
+<p>过程中输入webdav的用户名密码</p>
+<h3 id="2-4-卸载"><a href="#2-4-卸载" class="headerlink" title="2.4 卸载"></a>2.4 卸载</h3><figure class="highlight awk"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo umount <span class="regexp">/mnt/</span>webdav</div></pre></td></tr></table></figure>
+<h3 id="2-5-记住用户名密码"><a href="#2-5-记住用户名密码" class="headerlink" title="2.5 记住用户名密码"></a>2.5 记住用户名密码</h3><h4 id="2-5-1-编辑davfs2-conf"><a href="#2-5-1-编辑davfs2-conf" class="headerlink" title="2.5.1 编辑davfs2.conf"></a>2.5.1 编辑davfs2.conf</h4><figure class="highlight vim"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">vi</span> /etc/davfs2/davfs2.<span class="keyword">conf</span></div></pre></td></tr></table></figure>
+<ul>
+<li>找到“use_locks”   </li>
+<li>掉前面的 #  </li>
+<li>然后把 1 改为 0  </li>
+<li><p>保存    </p>
+<h4 id="2-5-2-编辑secrets文件"><a href="#2-5-2-编辑secrets文件" class="headerlink" title="2.5.2 编辑secrets文件"></a>2.5.2 编辑secrets文件</h4><figure class="highlight awk"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">vi <span class="regexp">/etc/</span>davfs2<span class="regexp">/secrets</span></div></pre></td></tr></table></figure>
+</li>
+<li><p>加入一行:<br><code>http://webdav_url 用户名 密码</code>  </p>
+<p>再次挂载的时候就无需密码了  </p>
+</li>
+</ul>
+<h3 id="2-6-开机自动挂载"><a href="#2-6-开机自动挂载" class="headerlink" title="2.6. 开机自动挂载"></a>2.6. 开机自动挂载</h3><blockquote>
+<p>以下在manjaro18.04测试成功</p>
+</blockquote>
+<h4 id="2-6-1-首先完成上面5的步骤记住用户名和密码"><a href="#2-6-1-首先完成上面5的步骤记住用户名和密码" class="headerlink" title="2.6.1 首先完成上面5的步骤记住用户名和密码"></a>2.6.1 首先完成上面5的步骤记住用户名和密码</h4><h4 id="2-6-2-创建文件mnt-webdav-mount"><a href="#2-6-2-创建文件mnt-webdav-mount" class="headerlink" title="2.6.2 创建文件mnt-webdav.mount"></a>2.6.2 创建文件mnt-webdav.mount</h4><blockquote>
+<p>注意把 <strong><a href="http://webdav_url" target="_blank" rel="noopener">http://webdav_url</a></strong> 换成自己webdav地址</p>
+</blockquote>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo vi <span class="regexp">/etc/</span>systemd<span class="regexp">/system/m</span>nt-webdav.mount</div></pre></td></tr></table></figure>
+<p>内容如下:<br><figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="section">[Unit]</span></div><div class="line"><span class="attr">Description</span>=Mount WebDAV Service</div><div class="line"><span class="attr">After</span>=network-<span class="literal">on</span>line.target</div><div class="line"><span class="attr">Wants</span>=network-<span class="literal">on</span>line.target</div><div class="line"><span class="section"></span></div><div class="line">[Mount]</div><div class="line"><span class="attr">What</span>=http://webdav_url</div><div class="line"><span class="attr">Where</span>=/mnt/webdav</div><div class="line"><span class="attr">Options</span>=uid=<span class="number">1000</span>,file_mode=<span class="number">0664</span>,dir_mode=<span class="number">2775</span>,grpid</div><div class="line"><span class="attr">Type</span>=davfs</div><div class="line"><span class="attr">TimeoutSec</span>=<span class="number">15</span></div><div class="line"><span class="section"></span></div><div class="line">[Install]</div><div class="line"><span class="attr">WantedBy</span>=multi-user.target</div></pre></td></tr></table></figure></p>
+<h4 id="2-6-3-创建文件mnt-webdav-automount"><a href="#2-6-3-创建文件mnt-webdav-automount" class="headerlink" title="2.6.3 创建文件mnt-webdav.automount"></a>2.6.3 创建文件mnt-webdav.automount</h4><figure class="highlight awk"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo vi <span class="regexp">/etc/</span>systemd<span class="regexp">/system/m</span>nt-webdav.automount</div></pre></td></tr></table></figure>
+<p>内容如下, TimeoutIdleSec是设置自动断开时间.<br><figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="section">[Unit]</span></div><div class="line"><span class="attr">Description</span>=Mount WebDAV Service</div><div class="line"><span class="attr">After</span>=network-<span class="literal">on</span>line.target</div><div class="line"><span class="attr">Wants</span>=network-<span class="literal">on</span>line.target</div><div class="line"><span class="section"></span></div><div class="line">[Automount]</div><div class="line"><span class="attr">Where</span>=/mnt/webdav</div><div class="line"><span class="attr">TimeoutIdleSec</span>=<span class="number">300</span></div><div class="line"><span class="section"></span></div><div class="line">[Install]</div><div class="line"><span class="attr">WantedBy</span>=remote-fs.target</div></pre></td></tr></table></figure></p>
+<h4 id="2-6-4-刷新服务并连接"><a href="#2-6-4-刷新服务并连接" class="headerlink" title="2.6.4 刷新服务并连接"></a>2.6.4 刷新服务并连接</h4><figure class="highlight smali"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo<span class="keyword"> system</span>ctl daemon-reload</div><div class="line">sudo<span class="keyword"> system</span>ctl start mnt-webdav.automount</div></pre></td></tr></table></figure>
+<h4 id="2-6-5-实现开始启动"><a href="#2-6-5-实现开始启动" class="headerlink" title="2.6.5 实现开始启动"></a>2.6.5 实现开始启动</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo systemctl <span class="built_in">enable</span> mnt-webdav.automount</div></pre></td></tr></table></figure>
+<h2 id="三-参考资料"><a href="#三-参考资料" class="headerlink" title="三.参考资料"></a>三.参考资料</h2><ul>
+<li><a href="https://wiki.archlinux.org/index.php/Davfs2#Using_systemd" target="_blank" rel="noopener">https://wiki.archlinux.org/index.php/Davfs2#Using_systemd</a></li>
+</ul>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/干货/">干货</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/网盘/">网盘</a><a href="/tags/webdav/">webdav</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="www.kowen.cn/2019/04/12/挂载webdav作为网盘/" data-title="挂载webdav作为网盘 | Do cool things for fun" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2018/08/08/2018-08-Ubuntu18-04美化总结/"  title="Ubuntu18.04美化总结">
+ <strong>下一篇：</strong><br/> 
+ <span>Ubuntu18.04美化总结
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一-windows挂载webdav网盘"><span class="toc-number">1.</span> <span class="toc-text">一. windows挂载webdav网盘</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-修改注册表支持http访问webdav"><span class="toc-number">1.1.</span> <span class="toc-text">1.1 修改注册表支持http访问webdav</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-重启服务"><span class="toc-number">1.2.</span> <span class="toc-text">1.2 重启服务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-映射网络驱动器"><span class="toc-number">1.3.</span> <span class="toc-text">1.3 映射网络驱动器</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二-linux挂载webdav网盘"><span class="toc-number">2.</span> <span class="toc-text">二. linux挂载webdav网盘</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-安装必要组件"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 安装必要组件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-查看当前用户的ID"><span class="toc-number">2.2.</span> <span class="toc-text">2.2 查看当前用户的ID</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-手动挂载"><span class="toc-number">2.3.</span> <span class="toc-text">2.3 手动挂载</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-卸载"><span class="toc-number">2.4.</span> <span class="toc-text">2.4 卸载</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-5-记住用户名密码"><span class="toc-number">2.5.</span> <span class="toc-text">2.5 记住用户名密码</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-5-1-编辑davfs2-conf"><span class="toc-number">2.5.1.</span> <span class="toc-text">2.5.1 编辑davfs2.conf</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-5-2-编辑secrets文件"><span class="toc-number">2.5.2.</span> <span class="toc-text">2.5.2 编辑secrets文件</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-6-开机自动挂载"><span class="toc-number">2.6.</span> <span class="toc-text">2.6. 开机自动挂载</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-6-1-首先完成上面5的步骤记住用户名和密码"><span class="toc-number">2.6.1.</span> <span class="toc-text">2.6.1 首先完成上面5的步骤记住用户名和密码</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-6-2-创建文件mnt-webdav-mount"><span class="toc-number">2.6.2.</span> <span class="toc-text">2.6.2 创建文件mnt-webdav.mount</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-6-3-创建文件mnt-webdav-automount"><span class="toc-number">2.6.3.</span> <span class="toc-text">2.6.3 创建文件mnt-webdav.automount</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-6-4-刷新服务并连接"><span class="toc-number">2.6.4.</span> <span class="toc-text">2.6.4 刷新服务并连接</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-6-5-实现开始启动"><span class="toc-number">2.6.5.</span> <span class="toc-text">2.6.5 实现开始启动</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三-参考资料"><span class="toc-number">3.</span> <span class="toc-text">三.参考资料</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/git/" title="git">git<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/java/" title="java">java<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/linux/" title="linux">linux<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/python/" title="python">python<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/web前端/" title="web前端">web前端<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/干货/" title="干货">干货<sup>10</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/数据库/" title="数据库">数据库<sup>1</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/PyQt5/" title="PyQt5">PyQt5<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/python/" title="python">python<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/git/" title="git">git<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/lighttpd/" title="lighttpd">lighttpd<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ubuntu/" title="ubuntu">ubuntu<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/网盘/" title="网盘">网盘<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/iptables/" title="iptables">iptables<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/nat/" title="nat">nat<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/firewall/" title="firewall">firewall<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/linux/" title="linux">linux<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/struts2/" title="struts2">struts2<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/主机头/" title="主机头">主机头<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/godaddy/" title="godaddy">godaddy<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/dnspod/" title="dnspod">dnspod<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/域名/" title="域名">域名<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/dwz/" title="dwz">dwz<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/上传/" title="上传">上传<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mysql/" title="mysql">mysql<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/字符集/" title="字符集">字符集<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/编码/" title="编码">编码<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+  
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Enjoy life! <br/>
+			Welcome to www.kowen.cn</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/1748948232" target="_blank" class="icon-weibo" title="微博"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:guangwen@outlook.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="kowen">kowen</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#nothing"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Ff461cd29606b66590e7cad3a4905fb4c' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

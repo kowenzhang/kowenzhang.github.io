@@ -1,0 +1,541 @@
+
+ <!DOCTYPE HTML>
+<html lang="auto_detect">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>lighttpd设置主机头虚拟主机防李鬼域名盗用你的网站 | Do cool things for fun</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="kowen">
+    
+
+    <meta name="keywords" content="主机头">
+    <meta name="description" content="最近百度关键字funcool发现很多网站打开之后和我的网站一模一样，以为是整个网站内容被拖走了，后来发现我更新的内容立刻就在这些李鬼网站上出现了。Ping这些域名后，原来是这些域名直接指向了我主机的IP。为了防止这些李鬼，必须想出一个解决方案。通过度娘得到消息：主机头绑定。">
+<meta name="keywords" content="主机头">
+<meta property="og:type" content="article">
+<meta property="og:title" content="lighttpd设置主机头虚拟主机防李鬼域名盗用你的网站">
+<meta property="og:url" content="www.kowen.cn/2016/01/28/lighttpd设置主机头虚拟主机防李鬼域名盗用你的网站/index.html">
+<meta property="og:site_name" content="Do cool things for fun">
+<meta property="og:description" content="最近百度关键字funcool发现很多网站打开之后和我的网站一模一样，以为是整个网站内容被拖走了，后来发现我更新的内容立刻就在这些李鬼网站上出现了。Ping这些域名后，原来是这些域名直接指向了我主机的IP。为了防止这些李鬼，必须想出一个解决方案。通过度娘得到消息：主机头绑定。">
+<meta property="og:locale" content="auto_detect">
+<meta property="og:updated_time" content="2019-04-08T09:06:12.048Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="lighttpd设置主机头虚拟主机防李鬼域名盗用你的网站">
+<meta name="twitter:description" content="最近百度关键字funcool发现很多网站打开之后和我的网站一模一样，以为是整个网站内容被拖走了，后来发现我更新的内容立刻就在这些李鬼网站上出现了。Ping这些域名后，原来是这些域名直接指向了我主机的IP。为了防止这些李鬼，必须想出一个解决方案。通过度娘得到消息：主机头绑定。">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Do cool things for fun" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/funcool_logo_32X32.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/funcool_logo_114X114.png">
+    <link rel="apple-touch-icon-precomposed" href="/img/funcool_logo_114X114.png">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/funcool_logo.svg" alt="Do cool things for fun" title="Do cool things for fun"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Do cool things for fun">Do cool things for fun</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">归档</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+						<form class="search" action="http://search.kowen.cn/cse/search" target="_blank">
+							<label>Search</label>
+						<input name="s" type="hidden" value= 12712694625790015895 ><input type="text" name="q" size="30" placeholder="Search"><br>
+						</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/01/28/lighttpd设置主机头虚拟主机防李鬼域名盗用你的网站/" title="lighttpd设置主机头虚拟主机防李鬼域名盗用你的网站" itemprop="url">lighttpd设置主机头虚拟主机防李鬼域名盗用你的网站</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="kowen" target="_blank" itemprop="author">kowen</a>
+		
+  <p class="article-time">
+    <time datetime="2016-01-28T08:28:20.000Z" itemprop="datePublished"> Published 2016-01-28</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#添加虚拟主机"><span class="toc-number">1.</span> <span class="toc-text">添加虚拟主机</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#修改默认Web目录"><span class="toc-number">2.</span> <span class="toc-text">修改默认Web目录</span></a></li></ol>
+		
+		</div>
+		
+		<p>最近百度关键字funcool发现很多网站打开之后和我的网站一模一样，以为是整个网站内容被拖走了，后来发现我更新的内容立刻就在这些李鬼网站上出现了。Ping这些域名后，原来是这些域名直接指向了我主机的IP。为了防止这些李鬼，必须想出一个解决方案。通过度娘得到消息：主机头绑定。</p>
+<a id="more"></a>
+<p><strong>文章来源 <a href="http://www.kowen.cn/2016/01/28/lighttpd设置主机头虚拟主机防李鬼域名盗用你的网站/">www.kowen.cn</a></strong></p>
+<p>我使用的Web服务器是lighttpd，原来的配置文件（/etc/lighttpd/lighttpd.conf)直接把默认web根目录设置成了我的网站：“server.document-root  = “/var/www/blog””， 所以任何域名指向我的ip，都可以返回我的网站内容。</p>
+<p>解决方法：<strong>使用基于主机头的虚拟主机</strong></p>
+<h3 id="添加虚拟主机"><a href="#添加虚拟主机" class="headerlink" title="添加虚拟主机"></a>添加虚拟主机</h3><p> 添加配置到文件/etc/lighttpd/lighttpd.conf：<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="variable">$HTTP</span>[<span class="string">"host"</span>] == <span class="string">"www.funcool.xyz"</span> &#123;</div><div class="line">	server<span class="selector-class">.document-root</span> = <span class="string">"/var/www/blog"</span></div><div class="line">	server<span class="selector-class">.errorlog</span> = <span class="string">"/var/log/lighttpd/funcool-error.log"</span></div><div class="line">	accesslog<span class="selector-class">.filename</span> =<span class="string">"/var/log/lighttpd/funcool-access.log"</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h3 id="修改默认Web目录"><a href="#修改默认Web目录" class="headerlink" title="修改默认Web目录"></a>修改默认Web目录</h3><p> 把“server.document-root = “/var/www/blog””一行删掉, 启动失败，提示“a default document-root has to be set”，看来必须设置一个默认的web根目录。既然他们想推广我的网站，那只好将计就计：</p>
+<p>修改默认根目录 “server.document-root = “/var/www/default””</p>
+<p>在/var/www下建立一个文件夹default，里面新建一个网页index.html,内容如下：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"UTF-8"</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>Funcool<span class="tag">&lt;/<span class="name">title</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">"author"</span> <span class="attr">content</span>=<span class="string">"kowen"</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">"description"</span> <span class="attr">content</span>=<span class="string">"computer 电脑 programming 编程 linux English"</span>&gt;</span></div><div class="line">    <span class="comment">&lt;!-- 从网站首页上复制过来的头信息 --&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span>&gt;</span><span class="javascript"></span></div><div class="line">  <span class="built_in">window</span>.location =<span class="string">"http://www.funcool.xyz"</span>;</div><div class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></div></pre></td></tr></table></figure>
+<p><em>javascript的功能是，只要你访问默认网站的主页，就会自动跳转到我的域名的网站上去。</em></p>
+<p><em>加入head头信息是为了让搜索引擎采集他们域名的首页信息，访问的时候又跳转到我的网站，达到帮我推广的目的。</em></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/干货/">干货</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/lighttpd/">lighttpd</a><a href="/tags/主机头/">主机头</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="www.kowen.cn/2016/01/28/lighttpd设置主机头虚拟主机防李鬼域名盗用你的网站/" data-title="lighttpd设置主机头虚拟主机防李鬼域名盗用你的网站 | Do cool things for fun" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2016/01/29/解决dwz在chrome中上传文件后不能正常显示返回消息的问题/" title="解决dwz在chrome中上传文件后不能正常显示返回消息的问题">
+  <strong>上一篇：</strong><br/>
+  <span>
+  解决dwz在chrome中上传文件后不能正常显示返回消息的问题</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/01/28/解决Godaddy域名墙内解析不稳定的问题/"  title="解决Godaddy域名墙内解析不稳定的问题">
+ <strong>下一篇：</strong><br/> 
+ <span>解决Godaddy域名墙内解析不稳定的问题
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#添加虚拟主机"><span class="toc-number">1.</span> <span class="toc-text">添加虚拟主机</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#修改默认Web目录"><span class="toc-number">2.</span> <span class="toc-text">修改默认Web目录</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/git/" title="git">git<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/java/" title="java">java<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/linux/" title="linux">linux<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/python/" title="python">python<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/web前端/" title="web前端">web前端<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/干货/" title="干货">干货<sup>10</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/数据库/" title="数据库">数据库<sup>1</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/PyQt5/" title="PyQt5">PyQt5<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/python/" title="python">python<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/git/" title="git">git<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/lighttpd/" title="lighttpd">lighttpd<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ubuntu/" title="ubuntu">ubuntu<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/网盘/" title="网盘">网盘<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/iptables/" title="iptables">iptables<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/nat/" title="nat">nat<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/firewall/" title="firewall">firewall<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/linux/" title="linux">linux<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/struts2/" title="struts2">struts2<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/主机头/" title="主机头">主机头<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/godaddy/" title="godaddy">godaddy<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/dnspod/" title="dnspod">dnspod<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/域名/" title="域名">域名<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/dwz/" title="dwz">dwz<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/上传/" title="上传">上传<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mysql/" title="mysql">mysql<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/字符集/" title="字符集">字符集<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/编码/" title="编码">编码<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+  
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Enjoy life! <br/>
+			Welcome to www.kowen.cn</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/1748948232" target="_blank" class="icon-weibo" title="微博"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:guangwen@outlook.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="kowen">kowen</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#nothing"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Ff461cd29606b66590e7cad3a4905fb4c' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

@@ -1,0 +1,542 @@
+
+ <!DOCTYPE HTML>
+<html lang="auto_detect">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>ubuntu分区并挂载超大硬盘 | Do cool things for fun</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="kowen">
+    
+
+    
+    <meta name="description" content="FDISK工具无法创建大于２ＴＢ的分区，需要使用ｐａｒｔｅｄ工具进行分区">
+<meta name="keywords" content="parted,GPT">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ubuntu分区并挂载超大硬盘">
+<meta property="og:url" content="www.kowen.cn/2017/11/24/ubuntu分区并挂载超大硬盘/index.html">
+<meta property="og:site_name" content="Do cool things for fun">
+<meta property="og:description" content="FDISK工具无法创建大于２ＴＢ的分区，需要使用ｐａｒｔｅｄ工具进行分区">
+<meta property="og:locale" content="auto_detect">
+<meta property="og:updated_time" content="2019-04-08T09:06:12.054Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ubuntu分区并挂载超大硬盘">
+<meta name="twitter:description" content="FDISK工具无法创建大于２ＴＢ的分区，需要使用ｐａｒｔｅｄ工具进行分区">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Do cool things for fun" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/funcool_logo_32X32.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/funcool_logo_114X114.png">
+    <link rel="apple-touch-icon-precomposed" href="/img/funcool_logo_114X114.png">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/funcool_logo.svg" alt="Do cool things for fun" title="Do cool things for fun"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Do cool things for fun">Do cool things for fun</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">归档</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+						<form class="search" action="http://search.kowen.cn/cse/search" target="_blank">
+							<label>Search</label>
+						<input name="s" type="hidden" value= 12712694625790015895 ><input type="text" name="q" size="30" placeholder="Search"><br>
+						</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/11/24/ubuntu分区并挂载超大硬盘/" title="ubuntu分区并挂载超大硬盘" itemprop="url">ubuntu分区并挂载超大硬盘</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="kowen" target="_blank" itemprop="author">kowen</a>
+		
+  <p class="article-time">
+    <time datetime="2017-11-24T08:05:00.000Z" itemprop="datePublished"> Published 2017-11-24</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#使用fdisk-l-查看硬盘大小"><span class="toc-number">1.</span> <span class="toc-text">使用fdisk -l 查看硬盘大小</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用parted工具分区"><span class="toc-number">2.</span> <span class="toc-text">使用parted工具分区</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#格式化硬盘并挂载"><span class="toc-number">3.</span> <span class="toc-text">格式化硬盘并挂载</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#确认分区"><span class="toc-number">4.</span> <span class="toc-text">确认分区</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#参考资料"><span class="toc-number">5.</span> <span class="toc-text">参考资料</span></a></li></ol>
+		
+		</div>
+		
+		<p>FDISK工具无法创建大于２ＴＢ的分区，需要使用ｐａｒｔｅｄ工具进行分区</p>
+<a id="more"></a>
+<p>操作系统：　ubuntu server 16.04</p>
+<h3 id="使用fdisk-l-查看硬盘大小"><a href="#使用fdisk-l-查看硬盘大小" class="headerlink" title="使用fdisk -l 查看硬盘大小"></a>使用fdisk -l 查看硬盘大小</h3><figure class="highlight tap"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">ubuntu@UbuntuServer:~$ sudo fdisk -l</div><div class="line">Disk /dev/sda:<span class="number"> 100 </span>GiB,<span class="number"> 107374182400 </span>bytes,<span class="number"> 209715200 </span>sectors</div><div class="line">Units: sectors of<span class="number"> 1 </span>*<span class="number"> 512 </span>=<span class="number"> 512 </span>bytes</div><div class="line">Sector size (logical/physical):<span class="number"> 512 </span>bytes /<span class="number"> 512 </span>bytes</div><div class="line">I/O size (minimum/optimal):<span class="number"> 512 </span>bytes /<span class="number"> 512 </span>bytes</div><div class="line">Disklabel type: dos</div><div class="line">Disk identifier: 0xd0bc3dd4</div><div class="line"></div><div class="line">Device     Boot   Start       End   Sectors  Size Id Type</div><div class="line">/dev/sda1  *      <span class="number"> 2048 </span>  <span class="number"> 999423 </span>  <span class="number"> 997376 </span> 487M<span class="number"> 83 </span>Linux</div><div class="line">/dev/sda2      <span class="number"> 1001470 </span>209713151<span class="number"> 208711682 </span>99.5G <span class="number"> 5 </span>Extended</div><div class="line">/dev/sda5      <span class="number"> 1001472 </span>209713151<span class="number"> 208711680 </span>99.5G 8e Linux LVM</div><div class="line"></div><div class="line"></div><div class="line">Disk /dev/sdb:<span class="number"> 5 </span>TiB,<span class="number"> 5497558138880 </span>bytes,<span class="number"> 10737418240 </span>sectors</div><div class="line">Units: sectors of<span class="number"> 1 </span>*<span class="number"> 512 </span>=<span class="number"> 512 </span>bytes</div><div class="line">Sector size (logical/physical):<span class="number"> 512 </span>bytes /<span class="number"> 512 </span>bytes</div><div class="line">I/O size (minimum/optimal):<span class="number"> 512 </span>bytes /<span class="number"> 512 </span>bytes</div><div class="line"></div><div class="line"></div><div class="line">Disk /dev/mapper/UbuntuServer--vg-root: 97.5 GiB,<span class="number"> 104710799360 </span>bytes,<span class="number"> 204513280 </span>sectors</div><div class="line">Units: sectors of<span class="number"> 1 </span>*<span class="number"> 512 </span>=<span class="number"> 512 </span>bytes</div><div class="line">Sector size (logical/physical):<span class="number"> 512 </span>bytes /<span class="number"> 512 </span>bytes</div><div class="line">I/O size (minimum/optimal):<span class="number"> 512 </span>bytes /<span class="number"> 512 </span>bytes</div><div class="line"></div><div class="line"></div><div class="line">Disk /dev/mapper/UbuntuServer--vg-swap_1:<span class="number"> 2 </span>GiB,<span class="number"> 2147483648 </span>bytes,<span class="number"> 4194304 </span>sectors</div><div class="line">Units: sectors of<span class="number"> 1 </span>*<span class="number"> 512 </span>=<span class="number"> 512 </span>bytes</div><div class="line">Sector size (logical/physical):<span class="number"> 512 </span>bytes /<span class="number"> 512 </span>bytes</div><div class="line">I/O size (minimum/optimal):<span class="number"> 512 </span>bytes /<span class="number"> 512 </span>bytes</div></pre></td></tr></table></figure>
+<p>可见新硬盘大小为5T，使用fdisk命令最大只能创建2T的分区，需要使用parted工具创建分区。</p>
+<h3 id="使用parted工具分区"><a href="#使用parted工具分区" class="headerlink" title="使用parted工具分区"></a>使用parted工具分区</h3><p>Linux下的GPT分区，这是另外一种分区，针对MBR分区，它有很多优点：　　<br>（1）几乎突破了分区个数的限制，在GPT分区表中最多可以支持128个主分区。<br>（2）单个分区容量几乎没有限制，单个分区最大支持1EB容量。</p>
+<p>因此GPT分区中，主分区和扩展分区，逻辑分区的概念已经很模糊了。甚至没必要这么叫。其实我们知道扩展分区之所以存在，意义就是为了解决MBR中分区个数的限制问题。既然在GPT中，分区个数几乎没有了限制，那么这些概念当然就模糊起来了。<br>使用的工具是”parted”，这个工具既可以做MBR分区，又可以做GPT分区。<br><figure class="highlight awk"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">sudo parted <span class="regexp">/dev/</span>sdb <span class="comment">#进入parted</span></div><div class="line">mklabel gpt <span class="comment">#将磁盘设置为gpt格式，</span></div><div class="line">mkpart primary <span class="number">0</span> -<span class="number">1</span> <span class="comment">#将磁盘所有的容量设置为GPT格式</span></div><div class="line">print <span class="comment">#查看分区结果</span></div></pre></td></tr></table></figure></p>
+<h3 id="格式化硬盘并挂载"><a href="#格式化硬盘并挂载" class="headerlink" title="格式化硬盘并挂载"></a>格式化硬盘并挂载</h3><figure class="highlight awk"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo mkfs.ext4 -F <span class="regexp">/dev/</span>sdb1 <span class="comment"># 将刚刚分出来的sda1格式化为ext4的格式,根据硬盘大小需要等待一段时间</span></div></pre></td></tr></table></figure>
+<p>创建硬盘挂载点，修改/etc/fstab使得硬盘能够一直挂载在系统中。<br>在新版本的ubuntu系统中/etc/fstab推荐使用分区的uuid来定义分区的挂载点，所以需要首先得到磁盘的uuid，这可以通过blkid命令得到<br><figure class="highlight groovy"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ubuntu<span class="meta">@UbuntuServer</span>:~$ sudo blkid -p <span class="regexp">/dev/</span>sdb1</div><div class="line"><span class="regexp">/dev/</span><span class="string">sdb1:</span> UUID=<span class="string">"f7b2ec9e-1d6c-4248-9d80-3b5d05b93d68"</span> VERSION=<span class="string">"1.0"</span> TYPE=<span class="string">"ext4"</span> USAGE=<span class="string">"filesystem"</span> PART_ENTRY_SCHEME=<span class="string">"gpt"</span> PART_ENTRY_NAME=<span class="string">"primary"</span> PART_ENTRY_UUID=<span class="string">"7e5600a0-1df2-4d7c-82e0-15baad67a80c"</span> PART_ENTRY_TYPE=<span class="string">"0fc63daf-8483-4772-8e79-3d69d8477de4"</span> PART_ENTRY_NUMBER=<span class="string">"1"</span> PART_ENTRY_OFFSET=<span class="string">"34"</span> PART_ENTRY_SIZE=<span class="string">"10737416254"</span> PART_ENTRY_DISK=<span class="string">"8:16"</span></div></pre></td></tr></table></figure></p>
+<p>在/etc/fstab中添加下面一行<br><figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">UUID=f7b2ec9e<span class="number">-1</span>d6c<span class="number">-4248</span><span class="number">-9</span>d80<span class="number">-3</span>b5d05b93d68 /NextCloud ext4 defaults <span class="number">0</span> <span class="number">0</span></div></pre></td></tr></table></figure></p>
+<h3 id="确认分区"><a href="#确认分区" class="headerlink" title="确认分区"></a>确认分区</h3><p>重启系统，使用df -H 命令查看分区情况<br><figure class="highlight erlang-repl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">ubuntu@UbuntuServer:/$ df -H</div><div class="line">Filesystem                         Size  Used Avail Use<span class="comment">% Mounted on</span></div><div class="line">udev                               <span class="number">2.1</span>G     <span class="number">0</span>  <span class="number">2.1</span>G   <span class="number">0</span><span class="comment">% /dev</span></div><div class="line">tmpfs                              <span class="number">415</span>M  <span class="number">6.4</span>M  <span class="number">408</span>M   <span class="number">2</span><span class="comment">% /run</span></div><div class="line">/dev/mapper/UbuntuServer--vg-root  <span class="number">103</span>G  <span class="number">5.7</span>G   <span class="number">92</span>G   <span class="number">6</span><span class="comment">% /</span></div><div class="line">tmpfs                              <span class="number">2.1</span>G     <span class="number">0</span>  <span class="number">2.1</span>G   <span class="number">0</span><span class="comment">% /dev/shm</span></div><div class="line">tmpfs                              <span class="number">5.3</span>M     <span class="number">0</span>  <span class="number">5.3</span>M   <span class="number">0</span><span class="comment">% /run/lock</span></div><div class="line">tmpfs                              <span class="number">2.1</span>G     <span class="number">0</span>  <span class="number">2.1</span>G   <span class="number">0</span><span class="comment">% /sys/fs/cgroup</span></div><div class="line">/dev/sda1                          <span class="number">495</span>M  <span class="number">111</span>M  <span class="number">359</span>M  <span class="number">24</span><span class="comment">% /boot</span></div><div class="line">/dev/sdb1                          <span class="number">5.5</span>T  <span class="number">2.3</span>G  <span class="number">5.2</span>T   <span class="number">1</span><span class="comment">% /NextCloud</span></div><div class="line">tmpfs                              <span class="number">415</span>M     <span class="number">0</span>  <span class="number">415</span>M   <span class="number">0</span><span class="comment">% /run/user/1000</span></div></pre></td></tr></table></figure></p>
+<p>挂载成功．</p>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><p><a href="https://jingyan.baidu.com/article/48b37f8ddee2bd1a6464881b.html" target="_blank" rel="noopener">https://jingyan.baidu.com/article/48b37f8ddee2bd1a6464881b.html</a><br><a href="http://www.linuxidc.com/Linux/2015-11/125397.htm" target="_blank" rel="noopener">http://www.linuxidc.com/Linux/2015-11/125397.htm</a><br><a href="http://blog.csdn.net/scaleqiao/article/details/45071489" target="_blank" rel="noopener">http://blog.csdn.net/scaleqiao/article/details/45071489</a></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/linux/">linux</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/parted/">parted</a><a href="/tags/GPT/">GPT</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="www.kowen.cn/2017/11/24/ubuntu分区并挂载超大硬盘/" data-title="ubuntu分区并挂载超大硬盘 | Do cool things for fun" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2017/12/14/ubuntu安装gitolite搭建git服务器/" title="ubuntu安装gitolite搭建git服务器">
+  <strong>上一篇：</strong><br/>
+  <span>
+  ubuntu安装gitolite搭建git服务器</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/10/23/docker和docker-compose安装/"  title="docker和docker-compose安装教程">
+ <strong>下一篇：</strong><br/> 
+ <span>docker和docker-compose安装教程
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#使用fdisk-l-查看硬盘大小"><span class="toc-number">1.</span> <span class="toc-text">使用fdisk -l 查看硬盘大小</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用parted工具分区"><span class="toc-number">2.</span> <span class="toc-text">使用parted工具分区</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#格式化硬盘并挂载"><span class="toc-number">3.</span> <span class="toc-text">格式化硬盘并挂载</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#确认分区"><span class="toc-number">4.</span> <span class="toc-text">确认分区</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#参考资料"><span class="toc-number">5.</span> <span class="toc-text">参考资料</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/git/" title="git">git<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/java/" title="java">java<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/linux/" title="linux">linux<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/python/" title="python">python<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/web前端/" title="web前端">web前端<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/干货/" title="干货">干货<sup>10</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/数据库/" title="数据库">数据库<sup>1</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/PyQt5/" title="PyQt5">PyQt5<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/python/" title="python">python<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/git/" title="git">git<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/lighttpd/" title="lighttpd">lighttpd<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ubuntu/" title="ubuntu">ubuntu<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/网盘/" title="网盘">网盘<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/iptables/" title="iptables">iptables<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/nat/" title="nat">nat<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/firewall/" title="firewall">firewall<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/linux/" title="linux">linux<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/struts2/" title="struts2">struts2<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/主机头/" title="主机头">主机头<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/godaddy/" title="godaddy">godaddy<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/dnspod/" title="dnspod">dnspod<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/域名/" title="域名">域名<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/dwz/" title="dwz">dwz<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/上传/" title="上传">上传<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mysql/" title="mysql">mysql<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/字符集/" title="字符集">字符集<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/编码/" title="编码">编码<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+  
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Enjoy life! <br/>
+			Welcome to www.kowen.cn</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/1748948232" target="_blank" class="icon-weibo" title="微博"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:guangwen@outlook.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="kowen">kowen</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#nothing"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Ff461cd29606b66590e7cad3a4905fb4c' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

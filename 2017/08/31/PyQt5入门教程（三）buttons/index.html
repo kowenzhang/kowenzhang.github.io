@@ -1,0 +1,548 @@
+
+ <!DOCTYPE HTML>
+<html lang="auto_detect">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>PyQt5入门教程（三）buttons | Do cool things for fun</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="kowen">
+    
+
+    
+    <meta name="description" content="本文根据pythonspot英文教程编写,并加入了搜集的其他材料，by kowen  PyQt5通过QPushButton类实现按钮功能，这个类在PyQt5.QtWidgets包里面。QPushButton构造器可以传入text参数设置按钮的显示文字。">
+<meta name="keywords" content="PyQt5,python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PyQt5入门教程（三）buttons">
+<meta property="og:url" content="www.kowen.cn/2017/08/31/PyQt5入门教程（三）buttons/index.html">
+<meta property="og:site_name" content="Do cool things for fun">
+<meta property="og:description" content="本文根据pythonspot英文教程编写,并加入了搜集的其他材料，by kowen  PyQt5通过QPushButton类实现按钮功能，这个类在PyQt5.QtWidgets包里面。QPushButton构造器可以传入text参数设置按钮的显示文字。">
+<meta property="og:locale" content="auto_detect">
+<meta property="og:image" content="/2017/08/31/PyQt5入门教程（三）buttons/pyqt5-buton.png">
+<meta property="og:updated_time" content="2019-04-08T09:06:12.054Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PyQt5入门教程（三）buttons">
+<meta name="twitter:description" content="本文根据pythonspot英文教程编写,并加入了搜集的其他材料，by kowen  PyQt5通过QPushButton类实现按钮功能，这个类在PyQt5.QtWidgets包里面。QPushButton构造器可以传入text参数设置按钮的显示文字。">
+<meta name="twitter:image" content="/2017/08/31/PyQt5入门教程（三）buttons/pyqt5-buton.png">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Do cool things for fun" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/funcool_logo_32X32.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/funcool_logo_114X114.png">
+    <link rel="apple-touch-icon-precomposed" href="/img/funcool_logo_114X114.png">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/funcool_logo.svg" alt="Do cool things for fun" title="Do cool things for fun"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Do cool things for fun">Do cool things for fun</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">归档</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+						<form class="search" action="http://search.kowen.cn/cse/search" target="_blank">
+							<label>Search</label>
+						<input name="s" type="hidden" value= 12712694625790015895 ><input type="text" name="q" size="30" placeholder="Search"><br>
+						</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/08/31/PyQt5入门教程（三）buttons/" title="PyQt5入门教程（三）buttons" itemprop="url">PyQt5入门教程（三）buttons</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="kowen" target="_blank" itemprop="author">kowen</a>
+		
+  <p class="article-time">
+    <time datetime="2017-08-31T07:06:00.000Z" itemprop="datePublished"> Published 2017-08-31</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			
+		
+		</div>
+		
+		<blockquote>
+<p>本文根据<a href="https://pythonspot.com/en/gui/" target="_blank" rel="noopener">pythonspot英文教程</a>编写,并加入了搜集的其他材料，by <a href="http://www.kowen.cn">kowen</a></p>
+</blockquote>
+<p>PyQt5通过QPushButton类实现按钮功能，这个类在PyQt5.QtWidgets包里面。QPushButton构造器可以传入text参数设置按钮的显示文字。</p>
+<a id="more"></a>
+<p>使用QPushButton前需要先引入：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> PyQt5.QtWidgets <span class="keyword">import</span> QApplication, QWidget, QPushButton</div><div class="line"><span class="keyword">from</span> PyQt5.QtCore <span class="keyword">import</span> pyqtSlot</div></pre></td></tr></table></figure>
+<p>在initUI()方法中添加一下代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">button = QPushButton(<span class="string">'PyQt5 button'</span>, self)</div><div class="line">button.setToolTip(<span class="string">'This is an example button'</span>)</div><div class="line">button.move(<span class="number">100</span>,<span class="number">70</span>)</div></pre></td></tr></table></figure>
+<p>QPushButton()创建按钮组件，并传入显示的文字参数。<em>setToolTip()</em>设置鼠标滑入时的提示信息。最后<em>move()</em>方法设置按钮显示的位置。</p>
+<p>接下来为按钮建立点击触发的方法：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@pyqtSlot()</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">on_click</span><span class="params">(self)</span>:</span></div><div class="line">    print(<span class="string">'PyQt5 button click'</span>)</div></pre></td></tr></table></figure>
+<p>将按钮点击和方法关联起来：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">button.clicked.connect(self.on_click)</div></pre></td></tr></table></figure>
+<p>最后的代码如下：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> sys</div><div class="line"><span class="keyword">from</span> PyQt5.QtWidgets <span class="keyword">import</span> QApplication, QWidget, QPushButton</div><div class="line"><span class="keyword">from</span> PyQt5.QtGui <span class="keyword">import</span> QIcon</div><div class="line"><span class="keyword">from</span> PyQt5.QtCore <span class="keyword">import</span> pyqtSlot</div><div class="line"> </div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">App</span><span class="params">(QWidget)</span>:</span></div><div class="line"> </div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></div><div class="line">        super().__init__()</div><div class="line">        self.title = <span class="string">'PyQt5 button - pythonspot.com'</span></div><div class="line">        self.left = <span class="number">10</span></div><div class="line">        self.top = <span class="number">10</span></div><div class="line">        self.width = <span class="number">320</span></div><div class="line">        self.height = <span class="number">200</span></div><div class="line">        self.initUI()</div><div class="line"> </div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">initUI</span><span class="params">(self)</span>:</span></div><div class="line">        self.setWindowTitle(self.title)</div><div class="line">        self.setGeometry(self.left, self.top, self.width, self.height)</div><div class="line"> </div><div class="line">        button = QPushButton(<span class="string">'PyQt5 button'</span>, self)</div><div class="line">        button.setToolTip(<span class="string">'This is an example button'</span>)</div><div class="line">        button.move(<span class="number">100</span>,<span class="number">70</span>) </div><div class="line">        button.clicked.connect(self.on_click)</div><div class="line"> </div><div class="line">        self.show()</div><div class="line"> </div><div class="line"><span class="meta">    @pyqtSlot()</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">on_click</span><span class="params">(self)</span>:</span></div><div class="line">        print(<span class="string">'PyQt5 button click'</span>)</div><div class="line"> </div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</div><div class="line">    app = QApplication(sys.argv)</div><div class="line">    ex = App()</div><div class="line">    sys.exit(app.exec_())</div></pre></td></tr></table></figure></p>
+<p>效果展示</p>
+<img src="/2017/08/31/PyQt5入门教程（三）buttons/pyqt5-buton.png" title="按钮">
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/python/">python</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/PyQt5/">PyQt5</a><a href="/tags/python/">python</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="www.kowen.cn/2017/08/31/PyQt5入门教程（三）buttons/" data-title="PyQt5入门教程（三）buttons | Do cool things for fun" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2017/09/01/PyQt5入门教程（四）messagebox/" title="PyQt5入门教程（四）messagebox">
+  <strong>上一篇：</strong><br/>
+  <span>
+  PyQt5入门教程（四）messagebox</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/08/30/Pyqt5入门教程（二）Window/"  title="PyQt5入门教程（二）Window">
+ <strong>下一篇：</strong><br/> 
+ <span>PyQt5入门教程（二）Window
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ 
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/git/" title="git">git<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/java/" title="java">java<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/linux/" title="linux">linux<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/python/" title="python">python<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/web前端/" title="web前端">web前端<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/干货/" title="干货">干货<sup>10</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/数据库/" title="数据库">数据库<sup>1</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/PyQt5/" title="PyQt5">PyQt5<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/python/" title="python">python<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/git/" title="git">git<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/lighttpd/" title="lighttpd">lighttpd<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ubuntu/" title="ubuntu">ubuntu<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/网盘/" title="网盘">网盘<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/iptables/" title="iptables">iptables<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/nat/" title="nat">nat<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/firewall/" title="firewall">firewall<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/linux/" title="linux">linux<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/struts2/" title="struts2">struts2<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/主机头/" title="主机头">主机头<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/godaddy/" title="godaddy">godaddy<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/dnspod/" title="dnspod">dnspod<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/域名/" title="域名">域名<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/dwz/" title="dwz">dwz<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/上传/" title="上传">上传<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mysql/" title="mysql">mysql<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/字符集/" title="字符集">字符集<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/编码/" title="编码">编码<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+  
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Enjoy life! <br/>
+			Welcome to www.kowen.cn</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/1748948232" target="_blank" class="icon-weibo" title="微博"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:guangwen@outlook.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="kowen">kowen</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#nothing"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Ff461cd29606b66590e7cad3a4905fb4c' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

@@ -1,0 +1,570 @@
+
+ <!DOCTYPE HTML>
+<html lang="auto_detect">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>lighttpd配置https访问 | Do cool things for fun</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="kowen">
+    
+
+    
+    <meta name="description" content="本文介绍了如何在lighttpd上配置https访问，使用Let’s Encrypt获取免费SSL证书，以及自动更新证书by kowen   安装openssl1apt-get install openssl* 执行以下命令看到有（ssl）即代表成功1lighttpd -v">
+<meta name="keywords" content="lighttpd,https,Lets encrypt">
+<meta property="og:type" content="article">
+<meta property="og:title" content="lighttpd配置https访问">
+<meta property="og:url" content="www.kowen.cn/2017/10/17/lighttpd配置https访问/index.html">
+<meta property="og:site_name" content="Do cool things for fun">
+<meta property="og:description" content="本文介绍了如何在lighttpd上配置https访问，使用Let’s Encrypt获取免费SSL证书，以及自动更新证书by kowen   安装openssl1apt-get install openssl* 执行以下命令看到有（ssl）即代表成功1lighttpd -v">
+<meta property="og:locale" content="auto_detect">
+<meta property="og:updated_time" content="2019-04-08T09:06:12.054Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="lighttpd配置https访问">
+<meta name="twitter:description" content="本文介绍了如何在lighttpd上配置https访问，使用Let’s Encrypt获取免费SSL证书，以及自动更新证书by kowen   安装openssl1apt-get install openssl* 执行以下命令看到有（ssl）即代表成功1lighttpd -v">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Do cool things for fun" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/funcool_logo_32X32.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/funcool_logo_114X114.png">
+    <link rel="apple-touch-icon-precomposed" href="/img/funcool_logo_114X114.png">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/funcool_logo.svg" alt="Do cool things for fun" title="Do cool things for fun"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Do cool things for fun">Do cool things for fun</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">归档</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+						<form class="search" action="http://search.kowen.cn/cse/search" target="_blank">
+							<label>Search</label>
+						<input name="s" type="hidden" value= 12712694625790015895 ><input type="text" name="q" size="30" placeholder="Search"><br>
+						</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/10/17/lighttpd配置https访问/" title="lighttpd配置https访问" itemprop="url">lighttpd配置https访问</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="kowen" target="_blank" itemprop="author">kowen</a>
+		
+  <p class="article-time">
+    <time datetime="2017-10-17T06:31:00.000Z" itemprop="datePublished"> Published 2017-10-17</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#安装openssl"><span class="toc-number">1.</span> <span class="toc-text">安装openssl</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用Let’s-Encrypt获取免费ssl证书"><span class="toc-number">2.</span> <span class="toc-text">使用Let’s Encrypt获取免费ssl证书</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#配置lighttpd"><span class="toc-number">3.</span> <span class="toc-text">配置lighttpd</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#自动每月更新证书"><span class="toc-number">4.</span> <span class="toc-text">自动每月更新证书</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#重定向http服务到https-如果需要"><span class="toc-number">5.</span> <span class="toc-text">重定向http服务到https(如果需要)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-number">6.</span> <span class="toc-text">参考资料</span></a></li></ol>
+		
+		</div>
+		
+		<blockquote>
+<p>本文介绍了如何在lighttpd上配置https访问，使用Let’s Encrypt获取免费SSL证书，以及自动更新证书<br>by <a href="https://www.kowen.cn">kowen</a> </p>
+</blockquote>
+<h2 id="安装openssl"><a href="#安装openssl" class="headerlink" title="安装openssl"></a>安装openssl</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">apt-get install openssl*</div></pre></td></tr></table></figure>
+<p>执行以下命令看到有（ssl）即代表成功<br><figure class="highlight ebnf"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="attribute">lighttpd -v</span></div></pre></td></tr></table></figure></p>
+<a id="more"></a>
+<h2 id="使用Let’s-Encrypt获取免费ssl证书"><a href="#使用Let’s-Encrypt获取免费ssl证书" class="headerlink" title="使用Let’s Encrypt获取免费ssl证书"></a>使用Let’s Encrypt获取免费ssl证书</h2><p>let’s encrypt是比较流行的一个免费ssl证书颁发机构，我们使用简易的脚本来获取，见参考资料1</p>
+<ol>
+<li><p>建立目录，下载脚本</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">mkdir</span> letsencrypt</div><div class="line"><span class="keyword">cd</span> letsencrypt</div><div class="line">wget http<span class="variable">s:</span>//raw.githubusercontent.<span class="keyword">com</span>/xdtianyu/scripts/master/lets-encrypt/letsencrypt.<span class="keyword">conf</span></div><div class="line">wget http<span class="variable">s:</span>//raw.githubusercontent.<span class="keyword">com</span>/xdtianyu/scripts/master/lets-encrypt/letsencrypt.<span class="keyword">sh</span></div><div class="line">chmod +<span class="keyword">x</span> letsencrypt.<span class="keyword">sh</span></div></pre></td></tr></table></figure>
+</li>
+<li><p>修改配置文件letsencrypt.conf，把 DOMAIN_KEY DOMAIN_DIR DOMAINS 三个参数改为你自己的信息，注意把LIGHTTPD=TRUE前的#号删除，否则不能生成pem文件。比如：</p>
+<figure class="highlight protobuf"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">ACCOUNT_KEY=<span class="string">"letsencrypt-account.key"</span>  </div><div class="line">DOMAIN_KEY=<span class="string">"kowen.cn.key"</span>  </div><div class="line">DOMAIN_DIR=<span class="string">"/var/www/blog-public"</span>  </div><div class="line">DOMAINS=<span class="string">"DNS:kowen.cn,DNS:www.kowen.cn"</span>  </div><div class="line">\#ECC=TRUE  </div><div class="line">LIGHTTPD=TRUE</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p><em>注意：需要已经绑定DOMAINS的域名到 DOMAIN_DIR　指定的目录，即通过 <a href="http://kowen.cn" target="_blank" rel="noopener">http://kowen.cn</a> <a href="http://www.kowen.cn">http://www.kowen.cn</a> 可以访问到 /var/www/blog-public 目录，用于域名的验证．否则会出现错误</em></p>
+<ol>
+<li>执行命令生成一系列文件<figure class="highlight stata"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./letsencrypt.<span class="keyword">sh</span> letsencrypt.<span class="keyword">conf</span></div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>里面有两个lighttpd用到的文件：<br>　lets-encrypt-x3-cross-signed.pem和kowen.pem，<strong>其中kowen.pem是lighttpd配置文件中的ssl.pemfile，lets-encrypt-x3-cross-signed.pem是ssl.ca-file</strong></p>
+<h2 id="配置lighttpd"><a href="#配置lighttpd" class="headerlink" title="配置lighttpd"></a>配置lighttpd</h2><p>通过编辑配置文件 /etc/lighttpd/lighttpd.conf来启用ssl，有几种方式可供选择。<em>配置完成后要重启lighttpd服务生效。</em></p>
+<ol>
+<li><p>让服务器仅提供https访问，全局设置中添加ssl配置，更改服务端口为443</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">ssl<span class="selector-class">.engine</span>                  = <span class="string">"enable"</span></div><div class="line">ssl<span class="selector-class">.pemfile</span>                 = <span class="string">"/root/letsencrypt/kowen.pem"</span></div><div class="line">ssl<span class="selector-class">.ca-file</span>                 = <span class="string">"/root/letsencrypt/lets-encrypt-x3-cross-signed.pem"</span></div><div class="line">server<span class="selector-class">.port</span>                 = <span class="number">443</span>  ＃将原来的端口改为<span class="number">443</span></div></pre></td></tr></table></figure>
+</li>
+<li><p>不改变原配置，添加443端口访问</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="variable">$SERVER</span>[<span class="string">"socket"</span>] == <span class="string">":443"</span> &#123;  </div><div class="line">    ssl<span class="selector-class">.engine</span>   = <span class="string">"enable"</span>   </div><div class="line">    ssl<span class="selector-class">.pemfile</span>  = <span class="string">"/etc/lighttpd/certs/www.example.com.pem"</span> </div><div class="line">    ssl<span class="selector-class">.ca-file</span>  = <span class="string">"/etc/lighttpd/fullchain.pem"</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>设置443端口为新的虚拟主机</p>
+<figure class="highlight nix"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">$SERVER[<span class="string">"socket"</span>] == <span class="string">":443"</span> &#123;  </div><div class="line">         server.<span class="attr">document-root</span> = <span class="string">"/srv/ssl"</span> <span class="comment"># use your ssl directory here  </span></div><div class="line">         ssl.<span class="attr">engine</span>  = <span class="string">"enable"</span>   </div><div class="line">         ssl.<span class="attr">pemfile</span>  = &gt;<span class="string">"/etc/lighttpd/certs/www.example.com.pem"</span>    </div><div class="line">         ssl.<span class="attr">ca-file</span>  = <span class="string">"/etc/lighttpd/fullchain.pem"</span></div><div class="line"> &#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>为不同的虚拟主机配置不同的证书文件</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="variable">$HTTP</span>[<span class="string">"host"</span>] == <span class="string">"www.example.org"</span> &#123;  </div><div class="line">        ssl<span class="selector-class">.pemfile</span> = <span class="string">"/etc/lighttpd/certs/www.example.org.pem"</span>   </div><div class="line">        sl<span class="selector-class">.ca-file</span>  = <span class="string">"/etc/lighttpd/fullchain.pem"</span>  </div><div class="line">&#125;  </div><div class="line"><span class="variable">$HTTP</span>[<span class="string">"host"</span>] == <span class="string">"mail.example.org"</span> &#123;    </div><div class="line">        ssl<span class="selector-class">.pemfile</span> = <span class="string">"/etc/lighttpd/certs/mail.example.org.pem"</span>   </div><div class="line">        sl<span class="selector-class">.ca-file</span>  = <span class="string">"/etc/lighttpd/fullchain.pem"</span>  </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="自动每月更新证书"><a href="#自动每月更新证书" class="headerlink" title="自动每月更新证书"></a>自动每月更新证书</h2><p>Let’s Encrypt有有效期，需要续期才能继续使用</p>
+<p>编辑定时任务<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">crontab <span class="_">-e</span></div></pre></td></tr></table></figure></p>
+<p>添加以下任务，根据你的Letsencrypt脚本目录进行相应修改<br><figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># m h  dom mon dow   command  </span></div><div class="line">  <span class="number">0</span> <span class="number">0</span>   <span class="number">1</span>   *   *    <span class="regexp">/root/letsencrypt</span><span class="regexp">/letsencrypt.sh /root</span><span class="regexp">/letsencrypt/letsencrypt</span>.conf <span class="meta">&gt;&gt; </span>/var/log/lets-encrypt.log&gt;&amp;<span class="number">1</span></div></pre></td></tr></table></figure></p>
+<h2 id="重定向http服务到https-如果需要"><a href="#重定向http服务到https-如果需要" class="headerlink" title="重定向http服务到https(如果需要)"></a>重定向http服务到https(如果需要)</h2><p>首先要在配置中添加重定向组件：<br><figure class="highlight lasso"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">server.modules = (  </div><div class="line">      <span class="params">...</span>  </div><div class="line">      <span class="string">"mod_redirect"</span>,   </div><div class="line">      <span class="params">...</span>  </div><div class="line">)</div></pre></td></tr></table></figure></p>
+<p>然后配置虚拟主机80端口重定向到https服务：<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="variable">$SERVER</span>[<span class="string">"socket"</span>] == <span class="string">":80"</span> &#123;  </div><div class="line">        <span class="variable">$HTTP</span>[<span class="string">"host"</span>] =~ <span class="string">"example.org"</span> &#123;  </div><div class="line">         url<span class="selector-class">.redirect</span> = ( <span class="string">"^/(.*)"</span> =&gt; <span class="string">"https://example.org/$1"</span> )  </div><div class="line">          server<span class="selector-class">.name</span>                 = <span class="string">"example.org"</span>   </div><div class="line">        &#125;  </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>也可以重定向所有端口到对应https服务：<br><figure class="highlight perl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">$SERVER[<span class="string">"socket"</span>] == <span class="string">":80"</span> &#123;</div><div class="line">  $HTTP[<span class="string">"host"</span>] =~ <span class="string">"(.*)"</span> &#123;</div><div class="line">    url.redirect = ( <span class="string">"^/(.*)"</span> =&gt; <span class="string">"https://%1/$1"</span> )</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li>[1] <a href="https://github.com/xdtianyu/scripts/blob/master/lets-encrypt/README-CN.md" target="_blank" rel="noopener">一个快速获取/更新 Let’s encrypt 证书的 shell script</a></li>
+<li>[2] <a href="https://wiki.archlinux.org/index.php/Lighttpd_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)#SSL" target="_blank" rel="noopener">https://wiki.archlinux.org/index.php/Lighttpd_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)#SSL</a></li>
+</ul>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/lighttpd/">lighttpd</a><a href="/tags/https/">https</a><a href="/tags/Lets-encrypt/">Lets encrypt</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="www.kowen.cn/2017/10/17/lighttpd配置https访问/" data-title="lighttpd配置https访问 | Do cool things for fun" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2017/10/23/docker和docker-compose安装/" title="docker和docker-compose安装教程">
+  <strong>上一篇：</strong><br/>
+  <span>
+  docker和docker-compose安装教程</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/10/10/搭建你自己的私有云盘——Nextcloud配置教程/"  title="搭建你自己的私有云盘——Nextcloud配置教程">
+ <strong>下一篇：</strong><br/> 
+ <span>搭建你自己的私有云盘——Nextcloud配置教程
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#安装openssl"><span class="toc-number">1.</span> <span class="toc-text">安装openssl</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用Let’s-Encrypt获取免费ssl证书"><span class="toc-number">2.</span> <span class="toc-text">使用Let’s Encrypt获取免费ssl证书</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#配置lighttpd"><span class="toc-number">3.</span> <span class="toc-text">配置lighttpd</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#自动每月更新证书"><span class="toc-number">4.</span> <span class="toc-text">自动每月更新证书</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#重定向http服务到https-如果需要"><span class="toc-number">5.</span> <span class="toc-text">重定向http服务到https(如果需要)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-number">6.</span> <span class="toc-text">参考资料</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/git/" title="git">git<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/java/" title="java">java<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/linux/" title="linux">linux<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/python/" title="python">python<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/web前端/" title="web前端">web前端<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/干货/" title="干货">干货<sup>10</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/数据库/" title="数据库">数据库<sup>1</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/PyQt5/" title="PyQt5">PyQt5<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/python/" title="python">python<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/git/" title="git">git<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/lighttpd/" title="lighttpd">lighttpd<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ubuntu/" title="ubuntu">ubuntu<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/网盘/" title="网盘">网盘<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/iptables/" title="iptables">iptables<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/nat/" title="nat">nat<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/firewall/" title="firewall">firewall<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/linux/" title="linux">linux<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/struts2/" title="struts2">struts2<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/主机头/" title="主机头">主机头<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/godaddy/" title="godaddy">godaddy<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/dnspod/" title="dnspod">dnspod<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/域名/" title="域名">域名<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/dwz/" title="dwz">dwz<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/上传/" title="上传">上传<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mysql/" title="mysql">mysql<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/字符集/" title="字符集">字符集<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/编码/" title="编码">编码<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+  
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Enjoy life! <br/>
+			Welcome to www.kowen.cn</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/1748948232" target="_blank" class="icon-weibo" title="微博"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:guangwen@outlook.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="kowen">kowen</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#nothing"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Ff461cd29606b66590e7cad3a4905fb4c' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

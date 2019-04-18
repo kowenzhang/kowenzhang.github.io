@@ -1,0 +1,551 @@
+
+ <!DOCTYPE HTML>
+<html lang="auto_detect">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Mysql 5.6 在windows上的安装和字符集修改 | Do cool things for fun</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="kowen">
+    
+
+    <meta name="keywords" content="mysql,字符集,编码">
+    <meta name="description" content="Mysql 5.6的安装简介 MySQL Community Server 5.6.29下载 Windows 32Bit Windows 64Bit">
+<meta name="keywords" content="mysql,字符集,编码">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mysql 5.6 在windows上的安装和字符集修改">
+<meta property="og:url" content="www.kowen.cn/2016/03/10/Mysql-5-6-在windows上的安装和字符集修改/index.html">
+<meta property="og:site_name" content="Do cool things for fun">
+<meta property="og:description" content="Mysql 5.6的安装简介 MySQL Community Server 5.6.29下载 Windows 32Bit Windows 64Bit">
+<meta property="og:locale" content="auto_detect">
+<meta property="og:updated_time" content="2019-04-08T09:06:12.051Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Mysql 5.6 在windows上的安装和字符集修改">
+<meta name="twitter:description" content="Mysql 5.6的安装简介 MySQL Community Server 5.6.29下载 Windows 32Bit Windows 64Bit">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Do cool things for fun" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/funcool_logo_32X32.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/funcool_logo_114X114.png">
+    <link rel="apple-touch-icon-precomposed" href="/img/funcool_logo_114X114.png">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/funcool_logo.svg" alt="Do cool things for fun" title="Do cool things for fun"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Do cool things for fun">Do cool things for fun</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">归档</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+						<form class="search" action="http://search.kowen.cn/cse/search" target="_blank">
+							<label>Search</label>
+						<input name="s" type="hidden" value= 12712694625790015895 ><input type="text" name="q" size="30" placeholder="Search"><br>
+						</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/03/10/Mysql-5-6-在windows上的安装和字符集修改/" title="Mysql 5.6 在windows上的安装和字符集修改" itemprop="url">Mysql 5.6 在windows上的安装和字符集修改</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="kowen" target="_blank" itemprop="author">kowen</a>
+		
+  <p class="article-time">
+    <time datetime="2016-03-10T07:50:06.000Z" itemprop="datePublished"> Published 2016-03-10</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#解压到安装路径"><span class="toc-number">1.</span> <span class="toc-text">解压到安装路径</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#添加PATH路径"><span class="toc-number">2.</span> <span class="toc-text">添加PATH路径</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#安装服务"><span class="toc-number">3.</span> <span class="toc-text">安装服务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#启动Mysql服务"><span class="toc-number">4.</span> <span class="toc-text">启动Mysql服务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#客户端连接"><span class="toc-number">5.</span> <span class="toc-text">客户端连接</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#更改默认root密码"><span class="toc-number">6.</span> <span class="toc-text">更改默认root密码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#查看字符编码"><span class="toc-number">7.</span> <span class="toc-text">查看字符编码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#修改字符编码为UTF-8"><span class="toc-number">8.</span> <span class="toc-text">修改字符编码为UTF-8</span></a></li></ol>
+		
+		</div>
+		
+		<p><em>Mysql 5.6的安装简介</em></p>
+<p><strong>MySQL Community Server 5.6.29下载</strong></p>
+<p><a href="http://dev.mysql.com/get/Downloads/MySQL-5.6/mysql-5.6.29-win32.zip" target="_blank" rel="noopener">Windows 32Bit</a></p>
+<p><a href="http://dev.mysql.com/get/Downloads/MySQL-5.6/mysql-5.6.29-winx64.zip" target="_blank" rel="noopener">Windows 64Bit</a><br><a id="more"></a></p>
+<h3 id="解压到安装路径"><a href="#解压到安装路径" class="headerlink" title="解压到安装路径"></a>解压到安装路径</h3><p>Mysql 5.6不用运行安装程序，直接解压到你想安装的路径，例如：D:\Develop\mysql-5.6.21-winx64\</p>
+<h3 id="添加PATH路径"><a href="#添加PATH路径" class="headerlink" title="添加PATH路径"></a>添加PATH路径</h3><p>添加<strong>“解压的路径/bin”</strong> 到PATH变量</p>
+<h3 id="安装服务"><a href="#安装服务" class="headerlink" title="安装服务"></a>安装服务</h3><p>安装服务：mysqld –install<br>删除服务：mysqld –remove</p>
+<h3 id="启动Mysql服务"><a href="#启动Mysql服务" class="headerlink" title="启动Mysql服务"></a>启动Mysql服务</h3><p>启动服务：net start mysql<br>停止服务：net stop mysql<br><em>或者使用服务管理工具</em></p>
+<h3 id="客户端连接"><a href="#客户端连接" class="headerlink" title="客户端连接"></a>客户端连接</h3><p>console连接命令：<strong>mysql -u用户名 -p密码</strong></p>
+<h3 id="更改默认root密码"><a href="#更改默认root密码" class="headerlink" title="更改默认root密码"></a>更改默认root密码</h3><p>默认管理员用户为root，密码空<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">mysql –uroot</div><div class="line"><span class="keyword">set</span> <span class="keyword">password</span> <span class="keyword">for</span> root@localhost = <span class="keyword">password</span>(<span class="string">'123456'</span>);</div></pre></td></tr></table></figure></p>
+<h3 id="查看字符编码"><a href="#查看字符编码" class="headerlink" title="查看字符编码"></a>查看字符编码</h3><p>运行 <strong>SHOW VARIABLES LIKE ‘character%’;</strong>  可以查看当前的字符编码，结果如下：<br><figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="section">mysql&gt; SHOW VARIABLES LIKE 'character%';</span></div><div class="line">+--------------------------+------------------------------------------------+</div><div class="line"><span class="section">| Variable_name            | Value                                          |</span></div><div class="line">+--------------------------+------------------------------------------------+</div><div class="line">| character<span class="emphasis">_set_</span>client     | gbk                                            |</div><div class="line">| character<span class="emphasis">_set_</span>connection | gbk                                            |</div><div class="line">| character<span class="emphasis">_set_</span>database   | latin1                                         |</div><div class="line">| character<span class="emphasis">_set_</span>filesystem | binary                                         |</div><div class="line">| character<span class="emphasis">_set_</span>results    | gbk                                            |</div><div class="line">| character<span class="emphasis">_set_</span>server     | latin1                                         |</div><div class="line">| character<span class="emphasis">_set_</span>system     | utf8                                           |</div><div class="line"><span class="section">| character_sets_dir       | D:\Develop\mysql-5.6.21-winx64\share\charsets\ |</span></div><div class="line">+--------------------------+------------------------------------------------+</div><div class="line">8 rows in set (0.00 sec)</div></pre></td></tr></table></figure></p>
+<h3 id="修改字符编码为UTF-8"><a href="#修改字符编码为UTF-8" class="headerlink" title="修改字符编码为UTF-8"></a>修改字符编码为UTF-8</h3><p><em>默认字符集运行的话，中文会变成乱码，所以需要修改默认字符集</em></p>
+<ul>
+<li><p>首先复制一份my-default.ini，改名为my.ini。注意只有my.ini才起作用，开始的时候我一直改my-default.ini，不起作用，折腾了好一阵。</p>
+</li>
+<li><p>然后打开my.ini,在[mysqld]下面添加以下几行：</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">init_connect=<span class="string">'SET collation_connection = utf8_unicode_ci'</span></div><div class="line">init_connect=<span class="string">'SET NAMES utf8'</span></div><div class="line"><span class="keyword">character</span>-<span class="built_in">set</span>-server=utf8</div><div class="line">collation-server=utf8_unicode_ci</div><div class="line">skip-<span class="keyword">character</span>-<span class="built_in">set</span>-client-handshake</div></pre></td></tr></table></figure>
+</li>
+<li><p>重新启动mysql服务，再查看字符编码 character_set_server已经变成了utf8:</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="section">mysql&gt; show variables like 'character%';</span></div><div class="line">+--------------------------+----------------------------+</div><div class="line"><span class="section">| Variable_name            | Value                      |</span></div><div class="line">+--------------------------+----------------------------+</div><div class="line">| character<span class="emphasis">_set_</span>client     | utf8                       |</div><div class="line">| character<span class="emphasis">_set_</span>connection | utf8                       |</div><div class="line">| character<span class="emphasis">_set_</span>database   | utf8                       |</div><div class="line">| character<span class="emphasis">_set_</span>filesystem | binary                     |</div><div class="line">| character<span class="emphasis">_set_</span>results    | utf8                       |</div><div class="line">| character<span class="emphasis">_set_</span>server     | utf8                       |</div><div class="line">| character<span class="emphasis">_set_</span>system     | utf8                       |</div><div class="line"><span class="section">| character_sets_dir       | /usr/share/mysql/charsets/ |</span></div><div class="line">+--------------------------+----------------------------+</div></pre></td></tr></table></figure>
+</li>
+</ul>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/数据库/">数据库</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/mysql/">mysql</a><a href="/tags/字符集/">字符集</a><a href="/tags/编码/">编码</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="www.kowen.cn/2016/03/10/Mysql-5-6-在windows上的安装和字符集修改/" data-title="Mysql 5.6 在windows上的安装和字符集修改 | Do cool things for fun" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2016/03/18/Ubuntu-14-04-使用gitolite安装git服务器/" title="Ubuntu 14.04 使用gitolite安装git服务器">
+  <strong>上一篇：</strong><br/>
+  <span>
+  Ubuntu 14.04 使用gitolite安装git服务器</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/01/29/解决dwz在chrome中上传文件后不能正常显示返回消息的问题/"  title="解决dwz在chrome中上传文件后不能正常显示返回消息的问题">
+ <strong>下一篇：</strong><br/> 
+ <span>解决dwz在chrome中上传文件后不能正常显示返回消息的问题
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#解压到安装路径"><span class="toc-number">1.</span> <span class="toc-text">解压到安装路径</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#添加PATH路径"><span class="toc-number">2.</span> <span class="toc-text">添加PATH路径</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#安装服务"><span class="toc-number">3.</span> <span class="toc-text">安装服务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#启动Mysql服务"><span class="toc-number">4.</span> <span class="toc-text">启动Mysql服务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#客户端连接"><span class="toc-number">5.</span> <span class="toc-text">客户端连接</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#更改默认root密码"><span class="toc-number">6.</span> <span class="toc-text">更改默认root密码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#查看字符编码"><span class="toc-number">7.</span> <span class="toc-text">查看字符编码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#修改字符编码为UTF-8"><span class="toc-number">8.</span> <span class="toc-text">修改字符编码为UTF-8</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/git/" title="git">git<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/java/" title="java">java<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/linux/" title="linux">linux<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/python/" title="python">python<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/web前端/" title="web前端">web前端<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/干货/" title="干货">干货<sup>10</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/数据库/" title="数据库">数据库<sup>1</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/PyQt5/" title="PyQt5">PyQt5<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/python/" title="python">python<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/git/" title="git">git<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/lighttpd/" title="lighttpd">lighttpd<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/ubuntu/" title="ubuntu">ubuntu<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/网盘/" title="网盘">网盘<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/iptables/" title="iptables">iptables<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/nat/" title="nat">nat<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/firewall/" title="firewall">firewall<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/linux/" title="linux">linux<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/struts2/" title="struts2">struts2<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/主机头/" title="主机头">主机头<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/godaddy/" title="godaddy">godaddy<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/dnspod/" title="dnspod">dnspod<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/域名/" title="域名">域名<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/dwz/" title="dwz">dwz<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/上传/" title="上传">上传<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mysql/" title="mysql">mysql<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/字符集/" title="字符集">字符集<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/编码/" title="编码">编码<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+    </ul>
+</div>
+
+  
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Enjoy life! <br/>
+			Welcome to www.kowen.cn</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/1748948232" target="_blank" class="icon-weibo" title="微博"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:guangwen@outlook.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="kowen">kowen</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#nothing"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Ff461cd29606b66590e7cad3a4905fb4c' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
